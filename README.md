@@ -1,13 +1,43 @@
 # ChatGPT Micro-Cap Experiment
-Welcome to the repo behind my 6-month live trading experiment where ChatGPT manages a real-money micro-cap portfolio.
+Welcome to the repo behind my 6-month live trading experiment where AI models manage a real-money micro-cap portfolio.
+
+**🚀 Now supports Local LLMs and Google Gemini - No OpenAI dependency required!**
 
 # The Concept
-Everyday, I kept seeing the same ad about having an some A.I. pick undervalued stocks. It was obvious it was trying to get me to subscribe to some garbage, so I just rolled my eyes. 
+Every day, I kept seeing the same ad about having some A.I. pick undervalued stocks. It was obvious it was trying to get me to subscribe to some garbage, so I just rolled my eyes. 
 Then I started wondering, "How well would that actually work?".
 
 So, starting with just $100, I wanted to answer a simple but powerful question:
 
-**Can powerful large language models like ChatGPT actually generate alpha (or at least make smart trading decisions) using real-time data?**
+**Can powerful large language models actually generate alpha (or at least make smart trading decisions) using real-time data?**
+
+## 🤖 AI Model Support
+
+This experiment now supports multiple AI providers:
+- **Local LLMs via Ollama** (Llama 2, Mistral, CodeLlama, etc.) - **Recommended for privacy**
+- **Google Gemini** - High-quality cloud-based model
+- **No OpenAI dependency** - Run completely independently
+
+### Quick Setup
+
+1. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Setup local LLM or Gemini:**
+   ```bash
+   python setup_local_llm.py
+   ```
+
+3. **Configure your preferred AI model:**
+   - For **Ollama**: Install Ollama and pull a model (`ollama pull llama2`)
+   - For **Gemini**: Add your `GOOGLE_API_KEY` to `.env` file
+
+4. **Run enhanced analysis:**
+   ```bash
+   python "Scripts and CSV Files/enhanced_trading_script.py"
+   ```
 
 ## Each trading day:
 
@@ -58,13 +88,68 @@ AI is being hyped across every industry, but can it really manage money without 
 This project is an attempt to find out, with transparency, data, and a real budget.
 
 # Tech Stack
-Basic Python 
+**Core:**
+- Python 3.8+
+- Pandas + yFinance for data & logic
+- Matplotlib for visualizations
 
-Pandas + yFinance for data & logic
+**AI Integration:**
+- **Ollama** for local LLM models (Llama 2, Mistral, etc.)
+- **Google Gemini** for cloud-based AI analysis
+- **No OpenAI dependency** - completely independent
 
-Matplotlib for visualizations
+**Features:**
+- 🏠 **Local AI Models** - Run everything on your own hardware
+- 🔒 **Privacy-focused** - No data sent to OpenAI
+- 📊 **Enhanced Analysis** - AI-powered portfolio insights
+- 🎯 **Multi-model Support** - Choose your preferred AI provider
 
-ChatGPT 4o for decision-making
+## 🛠️ Installation & Setup
+
+### Prerequisites
+- Python 3.8 or higher
+- For local models: [Ollama](https://ollama.ai/) installed
+- For Gemini: Google API key
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/LuckyOne7777/ChatGPT-Micro-Cap-Experiment.git
+cd ChatGPT-Micro-Cap-Experiment
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Run setup script
+python setup_local_llm.py
+
+# Configure your AI provider in .env file
+# For Ollama: Set OLLAMA_MODEL=llama2 (or your preferred model)
+# For Gemini: Set GOOGLE_API_KEY=your_api_key_here
+```
+
+### Using Local Models (Recommended)
+```bash
+# Install Ollama (visit https://ollama.ai/)
+# Then pull a model:
+ollama pull llama2
+
+# Or try other models:
+ollama pull mistral
+ollama pull neural-chat
+
+# Run the enhanced trading script
+python "Scripts and CSV Files/enhanced_trading_script.py"
+```
+
+### Using Google Gemini
+```bash
+# Get API key from Google AI Studio
+# Add to .env file: GOOGLE_API_KEY=your_key_here
+
+# Run the enhanced trading script
+python "Scripts and CSV Files/enhanced_trading_script.py"
+```
 
 # Follow Along
 The experiment runs June 2025 to December 2025.
@@ -74,6 +159,15 @@ If you feel inspired to do something simiar, feel free to use this as a blueprin
 Updates are posted weekly on my blog — more coming soon!
 
 One final shameless plug: (https://substack.com/@nathanbsmith?utm_source=edit-profile-page)
+
+## 🤝 Contributing
+
+Interested in improving the AI analysis or adding new features? Contributions welcome!
+
+- Add support for new local models
+- Improve portfolio analysis prompts
+- Enhance risk management algorithms
+- Add new visualization features
 
 Find a mistake in the logs or have advice?
 Please Reach out here: nathanbsmith.business@gmail.com
