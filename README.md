@@ -1,7 +1,7 @@
 # ChatGPT Micro-Cap Experiment
 Welcome to the repo behind my 6-month live trading experiment where AI models manage a real-money micro-cap portfolio.
 
-**🚀 Now supports Local LLMs and Google Gemini - No OpenAI dependency required!**
+**🚀 Fully integrated Local LLMs and Google Gemini - Complete AI-powered analysis throughout!**
 
 # The Concept
 Every day, I kept seeing the same ad about having some A.I. pick undervalued stocks. It was obvious it was trying to get me to subscribe to some garbage, so I just rolled my eyes. 
@@ -13,10 +13,12 @@ So, starting with just $100, I wanted to answer a simple but powerful question:
 
 ## 🤖 AI Model Support
 
-This experiment now supports multiple AI providers:
+This experiment is **fully integrated** with multiple AI providers throughout the entire application:
 - **Local LLMs via Ollama** (Llama 2, Mistral, CodeLlama, etc.) - **Recommended for privacy**
 - **Google Gemini** - High-quality cloud-based model
 - **No OpenAI dependency** - Run completely independently
+- **Auto-provider selection** - Automatically uses the best available AI model
+- **Comprehensive integration** - AI analysis in every component
 
 ### Quick Setup
 
@@ -36,8 +38,42 @@ This experiment now supports multiple AI providers:
 
 4. **Run enhanced analysis:**
    ```bash
-   python "Scripts and CSV Files/enhanced_trading_script.py"
+   python run_analysis.py daily
    ```
+
+### 🎯 AI Integration Features
+
+The AI is now **fully integrated** throughout the application:
+
+- **📊 Daily Portfolio Analysis** - AI evaluates performance, risk, and opportunities
+- **🔍 Stock Research** - Deep AI-powered research on individual stocks  
+- **📈 Trading Strategy** - AI generates actionable trading recommendations
+- **⚠️ Risk Management** - AI monitors stop-losses and risk factors
+- **📋 Performance Reports** - Comprehensive AI analysis of returns vs benchmarks
+- **🚨 Alert System** - AI analyzes significant price movements
+- **📝 Automated Documentation** - All AI insights saved to files
+
+### 🚀 Usage Examples
+
+```bash
+# Run complete daily analysis with AI insights
+python run_analysis.py daily
+
+# Get AI performance analysis
+python run_analysis.py performance
+
+# Research a specific stock with AI
+python run_analysis.py research ABEO
+
+# Check AI configuration status
+python run_analysis.py status
+
+# Use the enhanced trading script
+python "Scripts and CSV Files/enhanced_trading_script.py"
+
+# Generate performance graphs with AI analysis
+python "Scripts and CSV Files/Generate_Graph.py"
+```
 
 ## Each trading day:
 
@@ -101,8 +137,10 @@ This project is an attempt to find out, with transparency, data, and a real budg
 **Features:**
 - 🏠 **Local AI Models** - Run everything on your own hardware
 - 🔒 **Privacy-focused** - No data sent to OpenAI
-- 📊 **Enhanced Analysis** - AI-powered portfolio insights
+- 📊 **Complete AI Integration** - AI analysis in every component
 - 🎯 **Multi-model Support** - Choose your preferred AI provider
+- 🤖 **Auto-provider Selection** - Automatically uses best available AI
+- 📋 **Comprehensive Reports** - Daily AI-powered analysis and insights
 
 ## 🛠️ Installation & Setup
 
@@ -139,7 +177,7 @@ ollama pull mistral
 ollama pull neural-chat
 
 # Run the enhanced trading script
-python "Scripts and CSV Files/enhanced_trading_script.py"
+python run_analysis.py daily
 ```
 
 ### Using Google Gemini
@@ -148,7 +186,44 @@ python "Scripts and CSV Files/enhanced_trading_script.py"
 # Add to .env file: GOOGLE_API_KEY=your_key_here
 
 # Run the enhanced trading script
-python "Scripts and CSV Files/enhanced_trading_script.py"
+python run_analysis.py daily
+```
+
+## 🎯 Complete AI Integration
+
+The repository now features **comprehensive AI integration** across all components:
+
+### Core AI Components:
+- **`llm_integration.py`** - Core AI analysis engine
+- **`ai_config.py`** - Centralized AI configuration management  
+- **`portfolio_manager.py`** - AI-powered portfolio management system
+- **`run_analysis.py`** - Simple CLI interface for all AI features
+
+### Enhanced Scripts:
+- **`Trading_Script.py`** - Now includes AI analysis of portfolio and significant moves
+- **`enhanced_trading_script.py`** - Advanced AI-powered trading with research capabilities
+- **`Generate_Graph.py`** - Performance visualization with AI performance analysis
+
+### AI Features Throughout:
+✅ **Portfolio Analysis** - Daily AI evaluation of holdings and performance  
+✅ **Stock Research** - AI-powered deep research on individual stocks  
+✅ **Trading Strategy** - AI generates specific buy/sell recommendations  
+✅ **Risk Management** - AI monitors stop-losses and portfolio risk  
+✅ **Performance Tracking** - AI analyzes returns vs benchmarks  
+✅ **Market Analysis** - AI evaluates significant price movements  
+✅ **Report Generation** - Comprehensive AI-powered daily reports  
+✅ **Auto-Documentation** - All AI insights automatically saved to files
+
+### Simple Usage:
+```bash
+# Complete daily analysis (recommended)
+python run_analysis.py daily
+
+# Quick performance check
+python run_analysis.py performance
+
+# Research any stock
+python run_analysis.py research TICKER
 ```
 
 # Follow Along

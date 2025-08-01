@@ -3,13 +3,15 @@ import pandas as pd
 from datetime import datetime
 import os
 import numpy as np 
+from llm_integration import LLMPortfolioAnalyzer
 
 # === update logs for portfolio ===
-def process_portfolio(portfolio, starting_cash):
+def process_portfolio(portfolio, starting_cash, use_llm_analysis=True):
     results = []
     total_value = 0
     total_pnl = 0
     cash = starting_cash
+    
     for _, stock in portfolio.iterrows():
         ticker = stock["ticker"]
         shares = int(stock["shares"])
@@ -88,6 +90,31 @@ def process_portfolio(portfolio, starting_cash):
         df = pd.concat([existing, df], ignore_index=True)
 
     df.to_csv(file, index=False)
+    
+    # === LLM Analysis Integration ===
+    if use_llm_analysis:
+        try:
+            # Try Ollama first, fallback to Gemini
+            try:
+                analyzer = LLMPortfolioAnalyzer(provider="ollama")
+            except:
+                analyzer = LLMPortfolioAnalyzer(provider="gemini")
+            
+            print("\n" + "="*50)
+            print("🤖 AI PORTFOLIO ANALYSIS")
+            print("="*50)
+            analysis = analyzer.analyze_portfolio_performance(df)
+            print(analysis)
+            
+            # Save analysis to file
+            with open(f"Scripts and CSV Files/ai_analysis_{today}.txt", "w") as f:
+                f.write(f"AI Portfolio Analysis - {today}\n")
+                f.write("="*40 + "\n")
+                f.write(analysis)
+                
+        except Exception as e:
+            print(f"AI analysis unavailable: {e}")
+    
     return chatgpt_portfolio
 
 # === Trade Logger (purely for stoplosses)===
@@ -207,7 +234,12 @@ If this is a mistake, enter 1. """)
 def daily_results(chatgpt_portfolio, cash):
     if isinstance(chatgpt_portfolio, pd.DataFrame):
             chatgpt_portfolio = chatgpt_portfolio.to_dict(orient="records")
+    
     print(f"prices and updates for {today}")
+    
+    # Track significant price movements for AI analysis
+    significant_moves = []
+    
     for stock in chatgpt_portfolio + [{"ticker": "^RUT"}] + [{"ticker": "IWO"}] + [{"ticker": "XBI"}]:
         ticker = stock['ticker']
         try:
@@ -221,6 +253,11 @@ def daily_results(chatgpt_portfolio, cash):
         print(f"{ticker} closing price: {price:.2f}")
         print(f"{ticker} volume for today: ${volume:,}")
         print(f"percent change from the day before: {percent_change:.2f}%")
+        
+        # Track significant moves (>5% change)
+        if abs(percent_change) > 5 and ticker not in ["^RUT", "IWO", "XBI"]:
+            significant_moves.append((ticker, percent_change, price))
+    
     chatgpt_df = pd.read_csv("Scripts and CSV Files/chatgpt_portfolio_update.csv")
 
     # Filter TOTAL rows and get latest equity
@@ -271,6 +308,22 @@ def daily_results(chatgpt_portfolio, cash):
     print(f"today's portfolio: {chatgpt_portfolio}")
     print(f"cash balance: {cash}")
 
+    # AI Analysis for significant moves
+    if significant_moves:
+        print(f"\n🚨 SIGNIFICANT MOVES DETECTED:")
+        for ticker, change, price in significant_moves:
+            print(f"   {ticker}: {change:+.2f}% (${price:.2f})")
+        
+        try:
+            # Get AI analysis for significant moves
+            analyzer = LLMPortfolioAnalyzer(provider="ollama")
+            for ticker, change, price in significant_moves:
+                print(f"\n🔍 AI Analysis for {ticker}:")
+                analysis = analyzer.research_stock(ticker, price)
+                print(analysis[:300] + "..." if len(analysis) > 300 else analysis)
+        except:
+            print("   (AI analysis unavailable)")
+
     print("""Here are is your update for today. You can make any changes you see fit (if necessary),
 but you may not use deep research.
 You can however use the Internet and check current prices for potenial buys.""")
@@ -285,5 +338,5 @@ chatgpt_portfolio = pd.DataFrame(chatgpt_portfolio)
 cash = 22.32
 
 
-chatgpt_portfolio = process_portfolio(chatgpt_portfolio, cash)
+chatgpt_portfolio = process_portfolio(chatgpt_portfolio, cash, use_llm_analysis=True)
 daily_results(chatgpt_portfolio, cash)

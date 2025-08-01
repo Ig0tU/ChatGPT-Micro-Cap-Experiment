@@ -4,6 +4,7 @@ import requests
 from typing import Dict, List, Optional, Union
 from datetime import datetime
 import pandas as pd
+from ai_config import get_ai_config
 
 try:
     import google.generativeai as genai
@@ -35,8 +36,23 @@ class LLMPortfolioAnalyzer:
             provider: "ollama" for local models or "gemini" for Google Gemini
             model: Model name (e.g., "llama2", "mistral" for Ollama or "gemini-pro" for Gemini)
         """
+        # Use AI config manager for better configuration handling
+        self.config_manager = get_ai_config()
+        
+        # Auto-select provider if not specified or unavailable
+        if provider == "auto":
+            provider = self.config_manager.get_preferred_provider()
+            if not provider:
+                raise ValueError("No AI providers available. Please configure Ollama or Gemini.")
+        
         self.provider = provider.lower()
-        self.model = model
+        
+        # Get configuration for the provider
+        self.config = self.config_manager.get_config(self.provider)
+        if not self.config:
+            raise ValueError(f"Configuration not found for provider: {self.provider}")
+        
+        self.model = model or self.config.model
         
         if self.provider == "gemini":
             self._setup_gemini()
@@ -50,18 +66,16 @@ class LLMPortfolioAnalyzer:
         if not GEMINI_AVAILABLE:
             raise ImportError("Google Generative AI not installed")
         
-        api_key = os.getenv("GOOGLE_API_KEY")
+        api_key = self.config.api_key
         if not api_key:
             raise ValueError("GOOGLE_API_KEY not found in environment variables")
         
         genai.configure(api_key=api_key)
-        self.model = self.model or "gemini-pro"
         self.client = genai.GenerativeModel(self.model)
     
     def _setup_ollama(self):
         """Setup Ollama for local models"""
-        self.ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        self.model = self.model or os.getenv("OLLAMA_MODEL", "llama2")
+        self.ollama_host = self.config.host
         
         # Test Ollama connection
         try:
@@ -80,11 +94,15 @@ class LLMPortfolioAnalyzer:
         data = {
             "model": self.model,
             "prompt": prompt,
-            "stream": False
+            "stream": False,
+            "options": {
+                "temperature": self.config.temperature,
+                "num_predict": self.config.max_tokens
+            }
         }
         
         try:
-            response = requests.post(url, json=data, timeout=60)
+            response = requests.post(url, json=data, timeout=self.config.timeout)
             response.raise_for_status()
             return response.json()["response"]
         except requests.exceptions.RequestException as e:
@@ -230,21 +248,14 @@ class LLMPortfolioAnalyzer:
 def main():
     """Example usage of the LLM Portfolio Analyzer"""
     
-    # Example: Using Ollama with local Llama2 model
+    # Auto-select best available provider
     try:
-        analyzer = LLMPortfolioAnalyzer(provider="ollama", model="llama2")
-        print("✅ Ollama analyzer initialized successfully")
+        analyzer = LLMPortfolioAnalyzer(provider="auto")
+        print(f"✅ AI analyzer initialized successfully ({analyzer.provider})")
     except Exception as e:
-        print(f"❌ Ollama setup failed: {e}")
-        
-        # Fallback to Gemini if available
-        try:
-            analyzer = LLMPortfolioAnalyzer(provider="gemini")
-            print("✅ Gemini analyzer initialized as fallback")
-        except Exception as e2:
-            print(f"❌ Gemini setup also failed: {e2}")
-            print("Please ensure either Ollama is running or GOOGLE_API_KEY is set")
-            return
+        print(f"❌ AI setup failed: {e}")
+        print("Please ensure either Ollama is running or GOOGLE_API_KEY is set")
+        return
     
     # Load portfolio data
     try:

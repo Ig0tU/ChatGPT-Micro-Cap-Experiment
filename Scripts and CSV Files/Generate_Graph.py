@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import yfinance as yf
+from llm_integration import LLMPortfolioAnalyzer
 
 # === Load and prepare ChatGPT portfolio ===
 chatgpt_df = pd.read_csv("Scripts and CSV files/chatgpt_portfolio_update.csv")
@@ -61,3 +62,47 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
+# === AI Performance Analysis ===
+try:
+    print("\n" + "="*60)
+    print("🤖 AI PERFORMANCE ANALYSIS")
+    print("="*60)
+    
+    analyzer = LLMPortfolioAnalyzer(provider="ollama")
+    
+    # Calculate key metrics for AI analysis
+    final_chatgpt = float(chatgpt_totals["Total Equity"].iloc[-1])
+    total_return_pct = ((final_chatgpt - 100) / 100) * 100
+    spx_return_pct = ((final_spx - 100) / 100) * 100
+    outperformance = total_return_pct - spx_return_pct
+    
+    performance_prompt = f"""
+    Analyze this micro-cap portfolio performance:
+    
+    Portfolio Return: {total_return_pct:.2f}%
+    S&P 500 Return: {spx_return_pct:.2f}%
+    Outperformance: {outperformance:+.2f}%
+    
+    Trading Period: {len(chatgpt_totals)} days
+    Final Portfolio Value: ${final_chatgpt:.2f}
+    
+    Provide insights on:
+    1. Risk-adjusted performance assessment
+    2. Key factors driving outperformance/underperformance
+    3. Portfolio construction effectiveness
+    4. Recommendations for improvement
+    """
+    
+    analysis = analyzer.generate_response(performance_prompt)
+    print(analysis)
+    
+    # Save analysis
+    with open("Scripts and CSV Files/ai_performance_analysis.txt", "w") as f:
+        f.write(f"AI Performance Analysis - {pd.Timestamp.now().strftime('%Y-%m-%d')}\n")
+        f.write("="*50 + "\n")
+        f.write(analysis)
+    
+except Exception as e:
+    print(f"AI analysis unavailable: {e}")
+    print("Continuing with standard visualization...")
